@@ -101,7 +101,7 @@ the default path is the script path + "webdriver/chromedriver", My suggestion is
 3: <code>python3 settings.py</code>
 
 PS:
-* this script only running in python3. (原始碼只可以在 python3 下執行。）
+* this script only running in python3. (原始碼只可以在 python3 下執行，使用3.9。）
 * 請先確定你的python 執行環境下已安裝 selenium 及相關的套件，請參考 pip-reg.txt 檔案內容。
 * 如果是 2022-09-13 之前的版本，請到ChromeDriver網站 ([https://chromedriver.chromium.org/](https://chromedriver.chromium.org/)) 下載與您目前相同版本的 ChromeDriver 的執行檔，放在搶票程式的webdriver目錄下(Mac電腦請放到 MaxBot.app 套件裡的 /Contents/Resources/webdriver/)，在執行搶票程式前，第一次執行搶票主程式前，前請先手動點 ChromeDriver 的執行檔。
 * 透過 python3 執行 settings.py 就可以有 GUI 的設定界面。

@@ -68,7 +68,7 @@ def load_translate():
     en_us["date_keyword"] = 'Date Keyword'
     en_us["pass_date_is_sold_out"] = 'Pass date is sold out'
     en_us["auto_reload_coming_soon_page"] = 'Reload coming soon page'
-    
+
     en_us["area_auto_select"] = 'Area Auto Select'
     #en_us["area_select_order"] = 'Area select order'
     en_us["area_keyword_1"] = 'Area Keyword #1'
@@ -502,7 +502,7 @@ def btn_save_act(language_code, slience_mode=False):
         config_dict["advanced"]["facebook_account"] = txt_facebook_account.get().strip()
         config_dict["advanced"]["kktix_account"] = txt_kktix_account.get().strip()
         config_dict["advanced"]["adblock_plus_enable"] = bool(chk_state_adblock_plus.get())
-        
+
         config_dict["ocr_captcha"] = {}
         config_dict["ocr_captcha"]["enable"] = bool(chk_state_ocr_captcha.get())
         config_dict["ocr_captcha"]["auto_submit"] = bool(chk_state_ocr_captcha_with_submit.get())
@@ -714,7 +714,7 @@ def applyNewLanguage():
     lbl_kktix_area_keyword_2_and_text.config(text=translate[language_code]["and"])
     lbl_auto_guess_options.config(text=translate[language_code]["auto_guess_options"])
     lbl_user_guess_string.config(text=translate[language_code]["user_guess_string"])
-    
+
     lbl_date_auto_select.config(text=translate[language_code]["date_auto_select"])
     lbl_date_auto_select_mode.config(text=translate[language_code]["date_select_order"])
     lbl_date_keyword.config(text=translate[language_code]["date_keyword"])
@@ -1557,6 +1557,7 @@ def PreferenctTab(root, config_dict, language_code, UI_PADDING_X):
     showHideBlocks()
 
 def AdvancedTab(root, config_dict, language_code, UI_PADDING_X):
+
     row_count = 0
 
     frame_group_header = Frame(root)
@@ -1589,12 +1590,13 @@ def AdvancedTab(root, config_dict, language_code, UI_PADDING_X):
     print("captcha_sound_filename", captcha_sound_filename)
     print("adblock_plus_enable", adblock_plus_enable)
 
+    print ("set captcha")
     # assign default value.
     if captcha_sound_filename is None:
         captcha_sound_filename = ""
     if len(captcha_sound_filename)==0:
         captcha_sound_filename = captcha_sound_filename_default
-
+    print ("set captcha done")
 
     global lbl_browser
     lbl_browser = Label(frame_group_header, text=translate[language_code]['browser'])
@@ -1812,6 +1814,8 @@ def clearFrame(frame):
 def load_GUI(root, config_dict):
     clearFrame(root)
 
+    print ("clear ok...")
+
     language_code="en_us"
     if not config_dict is None:
         if u'language' in config_dict:
@@ -1830,6 +1834,8 @@ def load_GUI(root, config_dict):
     tabControl.grid(column=0, row=row_count)
     tabControl.select(tab1)
 
+    print ("add tab ok...")
+
     row_count+=1
 
     frame_action = get_action_bar(root, language_code)
@@ -1837,8 +1843,13 @@ def load_GUI(root, config_dict):
 
     global UI_PADDING_X
     PreferenctTab(tab1, config_dict, language_code, UI_PADDING_X)
+    print ("set preferenct tab ok...")
+
     AdvancedTab(tab2, config_dict, language_code, UI_PADDING_X)
+    print ("set advanced tab ok...")
+
     AboutTab(tab3, language_code)
+    print ("set about tab ok...")
 
 
 def main():

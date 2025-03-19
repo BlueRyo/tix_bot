@@ -1702,11 +1702,16 @@ def tixcraft_auto_ocr(driver, ocr, ocr_captcha_with_submit, ocr_captcha_force_su
     orc_answer = None
     if not ocr is None:
         Non_Browser = NonBrowser()
+        print ("create nonBrowser")
         Non_Browser.Set_cookies(driver.get_cookies())
+        print ("set cookie")
         img_base64 = base64.b64decode(Non_Browser.Request_Captcha())
+        print ("get img_base64")
         try:
+            print ("start to ocr")
             orc_answer = ocr.classification(img_base64)
         except Exception as exc:
+            print (f"ocr exception=>{exc}")
             pass
     else:
         print("ddddocr is None")
@@ -4893,6 +4898,7 @@ def play_mp3_async(sound_filename):
 def play_mp3(sound_filename):
     from playsound import playsound
     try:
+        print (sound_filename)
         playsound(sound_filename)
     except Exception as exc:
         msg=str(exc)
@@ -4902,6 +4908,7 @@ def play_mp3(sound_filename):
             try:
                 winsound.PlaySound(sound_filename, winsound.SND_FILENAME)
             except Exception as exc2:
+                print (f"play sound exception2=>{exc2}")
                 pass
 
 # purpose: check alert poped.
@@ -5204,11 +5211,15 @@ def main():
         print("Start to looping, detect browser url...")
 
     ocr = None
+    print (f"captcha setting...{str(config_dict['ocr_captcha']['enable'])}")
     try:
         if config_dict["ocr_captcha"]["enable"]:
             ocr = ddddocr.DdddOcr(show_ad=False, beta=True)
     except Exception as exc:
+        print (exc)
         pass
+
+    print (f"ocr is none...{ocr is None}")
 
     while True:
         time.sleep(0.1)
