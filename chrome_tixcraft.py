@@ -3,11 +3,17 @@
 # 'seleniumwire' and 'selenium 4' raise error when running python 2.x
 # PS: python 2.x will be removed in future.
 #執行方式：python chrome_tixcraft.py 或 python3 chrome_tixcraft.py
+
+
+
 import os
 import sys
 import platform
 import json
 import random
+
+BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
 
 from selenium import webdriver
 # for close tab.
@@ -863,6 +869,8 @@ def get_answer_list_by_question(CONST_EXAMPLE_SYMBOL, captcha_text_div_text):
 # close some div on home url.
 def tixcraft_home(driver):
     accept_all_cookies_btn = None
+
+
     try:
         accept_all_cookies_btn = driver.find_element(By.ID, 'onetrust-accept-btn-handler')
     except Exception as exc:
@@ -886,6 +894,7 @@ def tixcraft_home(driver):
                     driver.execute_script("arguments[0].click();", accept_all_cookies_btn)
                 except Exception as exc:
                     pass
+
 
     close_all_alert_btns = None
     try:
@@ -915,6 +924,7 @@ def tixcraft_home(driver):
                         pass
 
 # from detail to game
+# 將網址中的detail改為game直接列出所有場次
 def tixcraft_redirect(driver, url):
     ret = False
 
@@ -952,6 +962,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
 
     game_name = ""
 
+    # 網址最後一段為活動名稱
     if "/activity/game/" in url:
         url_split = url.split("/")
         if len(url_split) >= 6:
@@ -964,6 +975,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
 
     check_game_detail = False
     # choose date
+    # 確認這個頁面有沒有日期關鍵字
     if "/activity/game/%s" % (game_name,) in url:
         if show_debug_message:
             if len(date_keyword) == 0:
@@ -973,6 +985,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
         check_game_detail = True
 
     date_list = None
+    # 抓下全部的場次
     if check_game_detail:
         try:
             date_list = driver.find_elements(By.CSS_SELECTOR, '#gameList > table > tbody > tr')
@@ -981,7 +994,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
 
     is_coming_soon = False
     coming_soon_condictions_list = ['開賣','剩餘','天','小時','分鐘','秒','0',':','/']
-    
+
     button_list = None
     if date_list is not None:
         button_list = []
@@ -992,6 +1005,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
             row_text = ""
             try:
                 row_text = row.text
+                print (f"row text:{row_text if row_text is not None else ''}")
             except Exception as exc:
                 print("get text fail")
                 # should use continue or break?
@@ -1038,10 +1052,11 @@ def tixcraft_date_auto_select(driver, url, config_dict):
             if is_match_keyword_row:
                 el = None
                 try:
-                    el = row.find_element(By.CSS_SELECTOR, '.btn-next')
+                    # 抓取立即訂購按鈕，用class name抓，有可能會抓不到
+                    el = row.find_element(By.CSS_SELECTOR, '.btn-primary')
                 except Exception as exc:
                     if show_debug_message:
-                        print("find .btn-next fail")
+                        print("find .btn-primary fail")
                     pass
 
                 if el is not None:
@@ -1068,11 +1083,12 @@ def tixcraft_date_auto_select(driver, url, config_dict):
                 print("clicking row:", target_row_index+1)
 
             try:
+                # 模擬點擊
                 el = button_list[target_row_index]
                 el.click()
                 is_date_selected = True
             except Exception as exc:
-                print("try to click .btn-next fail")
+                print("try to click .btn-primary fail")
                 try:
                     driver.execute_script("arguments[0].click();", el)
                 except Exception as exc:
@@ -1082,7 +1098,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
         #   (A)user input keywords, with matched text, but no hyperlink to click.
         #   (B)user input keywords, but not no matched text with hyperlink to click.
 
-    # [PS]: current reload condition only when 
+    # [PS]: current reload condition only when
     if auto_reload_coming_soon_page_enable:
         if is_coming_soon:
             # case 2: match one row is coming soon.
@@ -1396,20 +1412,6 @@ def tixcraft_ticket_agree(driver):
             print("click TicketForm_agree fail")
             pass
 
-    # 使用 plan B.
-    #if not is_finish_checkbox_click:
-    # alway not use Plan B.
-    if False:
-        try:
-            print("use plan_b to check TicketForm_agree.")
-            driver.execute_script("$(\"input[type='checkbox']\").prop('checked', true);")
-            #driver.execute_script("document.getElementById(\"TicketForm_agree\").checked;")
-            is_finish_checkbox_click = True
-        except Exception as exc:
-            print("javascript check TicketForm_agree fail")
-            print(exc)
-            pass
-
     return is_finish_checkbox_click
 
 def tixcraft_ticket_number_auto_fill(driver, select_obj, ticket_number):
@@ -1597,7 +1599,7 @@ def tixcraft_verify(driver, presale_code):
                     alert_ret = check_pop_alert(driver)
                     if alert_ret:
                         if show_debug_message:
-                            print("press accept button at time #", i+1)                    
+                            print("press accept button at time #", i+1)
                         break
     else:
         if len(default_value)==0:
@@ -1708,7 +1710,7 @@ def tixcraft_auto_ocr(driver, ocr, ocr_captcha_with_submit, ocr_captcha_force_su
             pass
     else:
         print("ddddocr is None")
-        
+
     if not orc_answer is None:
         orc_answer = orc_answer.strip()
         print("orc_answer:", orc_answer)
@@ -1738,7 +1740,7 @@ def tixcraft_auto_ocr(driver, ocr, ocr_captcha_with_submit, ocr_captcha_force_su
 
 def tixcraft_ticket_main(driver, config_dict, ocr):
     auto_check_agree = config_dict["auto_check_agree"]
-    
+
     ocr_captcha_enable = config_dict["ocr_captcha"]["enable"]
     ocr_captcha_with_submit = config_dict["ocr_captcha"]["auto_submit"]
     ocr_captcha_force_submit = config_dict["ocr_captcha"]["force_submit"]
@@ -3831,7 +3833,7 @@ def cityline_date_auto_select(driver, auto_select_mode, date_keyword, auto_reloa
 
     #PS: some blocks are generate by ajax, not appear at first time.
     formated_area_list = None
-    
+
     if area_list is not None:
         area_list_count = len(area_list)
         if show_debug_message:
@@ -3840,7 +3842,7 @@ def cityline_date_auto_select(driver, auto_select_mode, date_keyword, auto_reloa
         if area_list_count > 0:
             formated_area_list = []
             # filter list.
-            
+
             row_index = 0
             for row in area_list:
                 row_index += 1
@@ -4300,7 +4302,7 @@ def cityline_performance(driver, config_dict):
             #print("area_keyword_1_and:", area_keyword_1_and)
             print("area_keyword_2:", area_keyword_2)
                 #print("area_keyword_2_and:", area_keyword_2_and)
-            
+
         # PS: cityline price default value is selected at the first option.
         is_need_refresh, is_price_assign_by_bot = cityline_area_auto_select(driver, area_auto_select_mode, area_keyword_1, area_keyword_1_and)
 
@@ -5368,7 +5370,7 @@ if __name__ == "__main__":
     CONST_MODE_CLI = 1
     mode = CONST_MODE_GUI
     #mode = CONST_MODE_CLI
-    
+
     if mode == CONST_MODE_GUI:
         main()
     else:
